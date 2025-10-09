@@ -61,7 +61,7 @@ export default function LoginPage() {
         </form>
 
         <div className="mt-3 text-xs flex items-center justify-center text-white w-full max-w-md gap-2">
-          <p>Don't have an account?</p>
+          <p>Don&apos;t have an account?</p>
           <a className="text-[#009966] rounded-xl hover:scale-110 duration-300 underline font-bold">
             Sign Up
           </a>
