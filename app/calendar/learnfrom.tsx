@@ -26,12 +26,12 @@ export default function Main() {
       const slotStart = new Date(slot.start);
       const slotEnd = new Date(slot.end);
       
-      // Check overlap
+      // Check if there's any overlap
       return newStart < slotEnd && newEnd > slotStart;
     });
 
     if (overlappingSlots.length > 0) {
-      // Populate original NON overlapping slots
+      // Remove overlapping slots and create new slots from the remaining parts
       let newSlots = selectedSlots.filter(slot => {
         const slotStart = new Date(slot.start);
         const slotEnd = new Date(slot.end);
@@ -77,37 +77,32 @@ export default function Main() {
     selectInfo.view.calendar.unselect();
   };
 
-  // const handleExport = () => {
-  //   const jsonData = JSON.stringify(selectedSlots, null, 2);
+  const handleExport = () => {
+    const jsonData = JSON.stringify(selectedSlots, null, 2);
     
-  //   // Create a blob and download
-  //   const blob = new Blob([jsonData], { type: 'application/json' });
-  //   const url = URL.createObjectURL(blob);
-  //   const a = document.createElement('a');
-  //   a.href = url;
-  //   a.download = 'data.json';
-  //   document.body.appendChild(a);
-  //   a.click();
-  //   document.body.removeChild(a);
-  //   URL.revokeObjectURL(url);
-  // };
-
-	const handleExport = () => {
-		console.log(selectedSlots);
-	}
+    // Create a blob and download
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'data.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   const handleClearAll = () => {
     setSelectedSlots([]);
   };
 
-  // Convert slots to FullCalendar events (colour here)
-	// NOTE: background is clear and works, block looks better but doesn't work
+  // Convert slots to FullCalendar events
   const events: EventInput[] = selectedSlots.map((slot) => ({
     id: slot.id,
     start: slot.start,
     end: slot.end,
     display: "background",
-    backgroundColor: "rgba(0, 153, 101)",
+    backgroundColor: "rgba(0, 153, 101, 0.5)",
   }));
 
   return (
@@ -146,7 +141,7 @@ export default function Main() {
               disabled={selectedSlots.length === 0}
               className="px-4 py-2 bg-[#009965] text-white rounded-lg hover:bg-[#003f2a] disabled:opacity-50 disabled:cursor-not-allowed font-medium"
             >
-              Submit
+              Export to JSON
             </button>
           </div>
           <p className="text-xs text-gray-500 mt-2">
@@ -160,11 +155,11 @@ export default function Main() {
         <div className="bg-white rounded-lg shadow-sm p-6">
           <FullCalendar
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-            initialView = {'timeGridWeek'}
+            initialView="timeGridWeek"
             weekends={false}
             selectable={true}
-            // selectMirror={true}
-            // selectOverlap={true}
+            selectMirror={true}
+            selectOverlap={true}
             headerToolbar={{
               start: "today prev,next",
               center: "title",
