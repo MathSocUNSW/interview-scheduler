@@ -7,6 +7,7 @@ import { EventInput } from "@fullcalendar/core"
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
+import { start } from "repl";
 
 interface TimeSlot {
   id: string;
@@ -30,9 +31,16 @@ export default function Main() {
       return newStart < slotEnd && newEnd > slotStart;
     });
 
+    let newSlots: TimeSlot[] = []; 
+
     if (overlappingSlots.length > 0) {
       // Populate original NON overlapping slots
-      let newSlots = selectedSlots.filter(slot => {
+      // let newSlots = selectedSlots.filter(slot => {
+      //   const slotStart = new Date(slot.start);
+      //   const slotEnd = new Date(slot.end);
+      //   return !(newStart < slotEnd && newEnd > slotStart);
+      // });
+      newSlots =  selectedSlots.filter(slot => {
         const slotStart = new Date(slot.start);
         const slotEnd = new Date(slot.end);
         return !(newStart < slotEnd && newEnd > slotStart);
@@ -62,20 +70,54 @@ export default function Main() {
         }
       });
 
-      setSelectedSlots(newSlots);
+      // setSelectedSlots(newSlots);
+      setSelectedSlots(spreadSlots(newSlots));
     } else {
       // No overlap, add the new availability slot
-      const newSlot: TimeSlot = {
+      // const newSlot: TimeSlot = {
+      //   id: `${selectInfo.startStr}-${selectInfo.endStr}`,
+      //   start: selectInfo.startStr,
+      //   end: selectInfo.endStr
+      // };
+      newSlots.push({
         id: `${selectInfo.startStr}-${selectInfo.endStr}`,
         start: selectInfo.startStr,
         end: selectInfo.endStr
-      };
-      setSelectedSlots([...selectedSlots, newSlot]);
+      })
+      // setSelectedSlots([...selectedSlots, newSlot]);
+      setSelectedSlots(prev => [...prev, ...spreadSlots(newSlots)]);
     }
-
     // Clear the selection
     selectInfo.view.calendar.unselect();
   };
+
+  const spreadSlots = (newSlots: TimeSlot[]) => {
+    let spreadSlots: TimeSlot[] = [];
+    newSlots.forEach(slot => {
+      const start = new Date (slot.start);
+      const end = new Date (slot.end);
+      console.log(`start: ${start}; end: ${end}`);
+      while (timeDifference(start, end) >= 30) {
+        // create new slot with start at start, and end at start + 30 mins
+        const newEnd = new Date (start.getTime());
+        newEnd.setMinutes(newEnd.getMinutes() + 30);
+        spreadSlots.push({
+            id: `${start.toISOString()}-${newEnd.toISOString()}`,
+            start: start.toISOString(),
+            end: newEnd.toISOString()
+          })
+        start.setMinutes(start.getMinutes() + 30);
+      }
+    })
+    return spreadSlots;
+  }
+  const timeDifference = (start: Date, end: Date) => {
+    return (Math.abs(end.getTime() - start.getTime())) / (1000 * 60);
+  }
+  // take selectedslots
+  // spread
+  // split each into 30 min intervals
+  // setSelectedSlots
 
   // const handleExport = () => {
   //   const jsonData = JSON.stringify(selectedSlots, null, 2);
