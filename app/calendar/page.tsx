@@ -163,8 +163,6 @@ export default function Main() {
             initialView = {'timeGridWeek'}
             weekends={false}
             selectable={true}
-            // selectMirror={true}
-            // selectOverlap={true}
             headerToolbar={{
               start: "today prev,next",
               center: "title",
@@ -173,6 +171,8 @@ export default function Main() {
             select={handleDateSelect}
             events={events}
             height="auto"
+			slotMinTime={"09:00"}
+			slotMaxTime={"18:00"}
           />
         </div>
       </div>
