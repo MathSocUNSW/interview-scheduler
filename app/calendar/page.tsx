@@ -142,8 +142,6 @@ export default function Main() {
   //   URL.revokeObjectURL(url);
   // };
 
-  
-
 	const handleExport = () => {
 		console.log(selectedSlots);
     // numeric array
@@ -246,8 +244,9 @@ export default function Main() {
             select={handleDateSelect}
             events={events}
             height="auto"
-			slotMinTime={"09:00"}
-			slotMaxTime={"18:00"}
+            slotMinTime={"09:00"}
+            slotMaxTime={"18:00"}
+            allDaySlot={false}
           />
         </div>
       </div>
