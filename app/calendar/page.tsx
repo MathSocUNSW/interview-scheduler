@@ -7,7 +7,6 @@ import { EventInput } from "@fullcalendar/core"
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import { start } from "repl";
 
 interface TimeSlot {
   id: string;
@@ -15,7 +14,14 @@ interface TimeSlot {
   end: string;
 }
 
+interface StoredTime {
+  day: number;
+  halfHourBlocks: number;
+}
+
 export default function Main() {
+  const startDate = new Date(2025, 11, 3, 0, 0, 0);
+
   const [selectedSlots, setSelectedSlots] = useState<TimeSlot[]>([]);
 
   const handleDateSelect = (selectInfo: DateSelectArg) => {
@@ -111,6 +117,8 @@ export default function Main() {
     })
     return spreadSlots;
   }
+
+  // time difference in minutes
   const timeDifference = (start: Date, end: Date) => {
     return (Math.abs(end.getTime() - start.getTime())) / (1000 * 60);
   }
@@ -134,9 +142,34 @@ export default function Main() {
   //   URL.revokeObjectURL(url);
   // };
 
+  
+
 	const handleExport = () => {
 		console.log(selectedSlots);
+    // numeric array
+    let slotArray: number[][] = [];
+    selectedSlots.forEach(slot => {
+      const currDate = new Date(slot.start);
+      const days: number = daysFromStart(currDate);
+      const blocks: number = timeFromDayStart(currDate);
+      slotArray.push([days, blocks]);
+    })
+    console.log(slotArray);
 	}
+
+  const daysFromStart = (currDate: Date) => {
+    return (Math.floor(timeDifference(startDate, currDate) / 1440));
+  }
+
+  const timeFromDayStart = (currDate: Date) => {
+    const hours = currDate.getHours();
+    const mins = currDate.getMinutes();
+    if (mins == 0) {
+      return 2 * (hours - 9);
+    } else {
+      return 2 * (hours - 9) + 1;
+    }
+  }
 
   const handleClearAll = () => {
     setSelectedSlots([]);
