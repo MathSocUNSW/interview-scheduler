@@ -119,24 +119,24 @@ export default function Main() {
   // split each into 30 min intervals
   // setSelectedSlots
 
-  // const handleExport = () => {
-  //   const jsonData = JSON.stringify(selectedSlots, null, 2);
+  const handleExport = () => {
+    const jsonData = JSON.stringify(selectedSlots, null, 2);
     
-  //   // Create a blob and download
-  //   const blob = new Blob([jsonData], { type: 'application/json' });
-  //   const url = URL.createObjectURL(blob);
-  //   const a = document.createElement('a');
-  //   a.href = url;
-  //   a.download = 'data.json';
-  //   document.body.appendChild(a);
-  //   a.click();
-  //   document.body.removeChild(a);
-  //   URL.revokeObjectURL(url);
-  // };
+    // Create a blob and download
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'data.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
-	const handleExport = () => {
-		console.log(selectedSlots);
-	}
+	// const handleExport = () => {
+	// 	console.log(selectedSlots);
+	// }
 
   const handleClearAll = () => {
     setSelectedSlots([]);
@@ -213,8 +213,9 @@ export default function Main() {
             select={handleDateSelect}
             events={events}
             height="auto"
-			slotMinTime={"09:00"}
-			slotMaxTime={"18:00"}
+            slotMinTime={"09:00"}
+            slotMaxTime={"18:00"}
+            allDaySlot={false}
           />
         </div>
       </div>
