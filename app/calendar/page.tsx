@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import FullCalendar from '@fullcalendar/react'
-import { DateSelectArg, EventClickArg } from "@fullcalendar/core"
+import { DateSelectArg} from "@fullcalendar/core"
 import { EventInput } from "@fullcalendar/core"
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -20,7 +20,7 @@ interface StoredTime {
 }
 
 export default function Main() {
-  const startDate = new Date(2025, 11, 3, 0, 0, 0);
+  const startDate = new Date(2025, 10, 3, 0, 0, 0);
 
   const [selectedSlots, setSelectedSlots] = useState<TimeSlot[]>([]);
 
@@ -41,11 +41,6 @@ export default function Main() {
 
     if (overlappingSlots.length > 0) {
       // Populate original NON overlapping slots
-      // let newSlots = selectedSlots.filter(slot => {
-      //   const slotStart = new Date(slot.start);
-      //   const slotEnd = new Date(slot.end);
-      //   return !(newStart < slotEnd && newEnd > slotStart);
-      // });
       newSlots =  selectedSlots.filter(slot => {
         const slotStart = new Date(slot.start);
         const slotEnd = new Date(slot.end);
@@ -80,20 +75,13 @@ export default function Main() {
       setSelectedSlots(spreadSlots(newSlots));
     } else {
       // No overlap, add the new availability slot
-      // const newSlot: TimeSlot = {
-      //   id: `${selectInfo.startStr}-${selectInfo.endStr}`,
-      //   start: selectInfo.startStr,
-      //   end: selectInfo.endStr
-      // };
       newSlots.push({
         id: `${selectInfo.startStr}-${selectInfo.endStr}`,
         start: selectInfo.startStr,
         end: selectInfo.endStr
       })
-      // setSelectedSlots([...selectedSlots, newSlot]);
       setSelectedSlots(prev => [...prev, ...spreadSlots(newSlots)]);
     }
-    // Clear the selection
     selectInfo.view.calendar.unselect();
   };
 
@@ -122,28 +110,8 @@ export default function Main() {
   const timeDifference = (start: Date, end: Date) => {
     return (Math.abs(end.getTime() - start.getTime())) / (1000 * 60);
   }
-  // take selectedslots
-  // spread
-  // split each into 30 min intervals
-  // setSelectedSlots
-
-  // const handleExport = () => {
-  //   const jsonData = JSON.stringify(selectedSlots, null, 2);
-    
-  //   // Create a blob and download
-  //   const blob = new Blob([jsonData], { type: 'application/json' });
-  //   const url = URL.createObjectURL(blob);
-  //   const a = document.createElement('a');
-  //   a.href = url;
-  //   a.download = 'data.json';
-  //   document.body.appendChild(a);
-  //   a.click();
-  //   document.body.removeChild(a);
-  //   URL.revokeObjectURL(url);
-  // };
 
 	const handleExport = () => {
-		console.log(selectedSlots);
     // numeric array
     let slotArray: number[][] = [];
     selectedSlots.forEach(slot => {
@@ -151,6 +119,14 @@ export default function Main() {
       const days: number = daysFromStart(currDate);
       const blocks: number = timeFromDayStart(currDate);
       slotArray.push([days, blocks]);
+    })
+
+    slotArray.sort((a, b) => {
+      if (!(a[0]-b[0])) {
+        return a[1] - b[1];
+      } else {
+        return a[0]-b[0];
+      }
     })
     console.log(slotArray);
 	}
